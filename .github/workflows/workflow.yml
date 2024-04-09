@@ -16,22 +16,26 @@ jobs:
           extensions: mbstring, pdo_mysql
           coverage: none
       - name: Install Dependencies
-        run: |
-          cd api
-          composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress
       - name: Run tests
-        run: |
-          cd api
-          composer pest
+        run: composer pest
   build:
     name: Build ⛏
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
-      - name: Install dependencies
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_mysql
+          coverage: none
+      - name: Install Laravel dependencies
+        run: composer install --prefer-dist --no-progress
+      - name: Install Vue.js dependencies
         run: npm ci
-      - name: Build dependencies
+      - name: Build Vue.js dependencies
         run: npm run build
       - name: Archive production artifact
         uses: actions/upload-artifact@main
