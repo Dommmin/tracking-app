@@ -37,11 +37,6 @@ jobs:
         run: npm install
       - name: Build Vue.js dependencies
         run: npm run build
-      - name: Archive production artifact
-        uses: actions/upload-artifact@main
-        with:
-          name: dist
-          path: dist
   deploy:
     name: Deploy 🚀
     needs: build
@@ -49,6 +44,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@main
+        with:
+          name: dist
+          path: dist
       - name: Sync files to hosting
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
