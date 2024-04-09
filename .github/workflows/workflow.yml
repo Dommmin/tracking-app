@@ -12,21 +12,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        run: composer install --prefer-dist --no-scripts --no-dev --optimize-autoloader
-
-      - name: Generate Key
-        run: php artisan key:generate
-
-      - name: Cache Configuration
-        run: php artisan config:cache
-
-      - name: Cache Routes
-        run: php artisan route:cache
-
-      - name: Cache Views
-        run: php artisan view:cache
-
       - name: FTP Deploy Application Files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
