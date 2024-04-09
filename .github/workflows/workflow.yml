@@ -34,7 +34,7 @@ jobs:
       - name: Install Laravel dependencies
         run: composer install --prefer-dist --no-progress
       - name: Install Vue.js dependencies
-        run: npm ci
+        run: npm install
       - name: Build Vue.js dependencies
         run: npm run build
       - name: Archive production artifact
