@@ -35,14 +35,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           server-dir: ./
-          exclude:
-            - .git*
-            - .env
-            - node_modules/*
-            - public/*
-            - storage/*
-            - resources/views/*
-            - tests/*
 
       - name: FTP Deploy Public Files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
