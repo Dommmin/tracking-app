@@ -1,4 +1,4 @@
-name: Laravel CI/CD
+name: Laravel CI/CD via FTP
 
 on:
   push:
@@ -6,19 +6,49 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SERVER_SSH_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-scripts --no-dev --optimize-autoloader
 
-      - name: Deploy to Server
-        run: |
-          rsync -av --delete --exclude='.git*' --exclude='/.env' ./ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/domains/dommin.smallhost.pl/public_html
+      - name: Generate Key
+        run: php artisan key:generate
+
+      - name: Cache Configuration
+        run: php artisan config:cache
+
+      - name: Cache Routes
+        run: php artisan route:cache
+
+      - name: Cache Views
+        run: php artisan view:cache
+
+      - name: FTP Deploy Application Files
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: ./
+          exclude:
+            - .git*
+            - .env
+            - node_modules/*
+            - public/*
+            - storage/*
+            - resources/views/*
+            - tests/*
+
+      - name: FTP Deploy Public Files
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: public/
+          server-dir: ./public_html
